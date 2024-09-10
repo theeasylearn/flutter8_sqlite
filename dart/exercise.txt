@@ -1,0 +1,31 @@
+1) write a program to find out profit or loss amount from user given production & sale price.
+use only decision making if statement.
+
+2) write a program to findout sum of all digits in given amount 
+amount = 12345
+sum = 1 + 2 + 3 + 4 + 5  = 15 
+
+3) write a program to reverse given amount 
+amount = 12345
+reversed amount = 54321
+
+4) write a program to findout average, minimum & maxium value from double type dynamic list 
+
+5) write a program to findout & prime prime number frm dynamic int type list. 
+
+6) count positive and negative value in list using forEach and  Anonymous  function
+
+7) display binary of all the values in list using forEach and  Anonymous  function
+
+8) Create class Product. store name, price, quantity, tax and total in instance variable. also add display method 
+
+9) Create class Movie. store name, startcast, ticket price and also add display method 
+
+10) create single level inheritance. there should be 2 class one for foot which return foot of given inches 
+another class should be meter which extends foot class and return meter of given inches. 
+
+11) do multi level inheritance using example 46 and create following classes 
+Petabyte (PB): 1 PB = 1,024 TB
+Exabyte (EB): 1 EB = 1,024 PB
+Zettabyte (ZB): 1 ZB = 1,024 EB
+Yottabyte (YB): 1 YB = 1,024 ZB
