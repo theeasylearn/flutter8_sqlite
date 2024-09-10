@@ -4,17 +4,28 @@ import 'package:sqflite/sqflite.dart';
 import 'add_trandaction.dart';
 import 'db_helper.dart';
 
-class ViewExpense extends StatelessWidget {
+class ViewExpense extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    ViewExpenseState ves1 = new ViewExpenseState();
+    return ves1;
+  }
 
-
+}
+class ViewExpenseState extends State<ViewExpense>
+{
   Database? db; //variable
   DBHelper? mydatabase = new DBHelper(); //object
-
+  var table;
+  var entries = []; //create empty list
   @override
-  void initstate()
+  void initState()
   {
-      initlizeDatabase();
-      String sql = "select * from " +  DBHelper.TABLE_TRANSACTION + " order by _id desc";
+    super.initState();
+    print("before fetch");
+    fetchTable();
+    print("after fetch");
+
   }
   @override
   Widget build(BuildContext context) {
@@ -28,7 +39,7 @@ class ViewExpense extends StatelessWidget {
         backgroundColor: Colors.lightGreen,
       ),
       body: Material(
-        color: const Color(0xffb2d4be),
+        color: Color(0xffb2d4be),
         child: CustomScrollView(
           slivers: [
             SliverAppBar(
@@ -37,19 +48,19 @@ class ViewExpense extends StatelessWidget {
             SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
                 return Padding(
-                  padding: const EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                  padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
                   child: Card(
                     elevation: 10,
                     child: ListTile(
-                      title: const Row(
+                      title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "Book Expense",
+                            entries[index]['title'].toString() + "[" + entries[index]['date'].toString() + "]",
                             style: TextStyle(fontFamily: "sfpro"),
                           ),
                           Text(
-                            "100",
+                            entries[index]['amount'].toString(),
                             style: TextStyle(
                                 fontFamily: "sfpro",
                                 fontWeight: FontWeight.bold),
@@ -59,7 +70,7 @@ class ViewExpense extends StatelessWidget {
                       subtitle: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text("Maths book sem 5"),
+                           Text( entries[index]['detail'].toString(),),
                           Row(
                             children: [
                               Image.asset("images/edit.png"),
@@ -72,7 +83,7 @@ class ViewExpense extends StatelessWidget {
                     ),
                   ),
                 );
-              }, childCount: 24),
+              }, childCount: entries.length),
             )
           ],
         ),
@@ -80,7 +91,15 @@ class ViewExpense extends StatelessWidget {
     );
   }
 
-  Future<void> initlizeDatabase() async {
+  Future<void> fetchTable() async {
+    print("before fetch sql statement run");
     db = await mydatabase!.db;
+    String sql = "select * from " +  DBHelper.TABLE_TRANSACTION + " order by _id desc";
+    table = await mydatabase!.FetchDataFromTable(sql);
+    print(table);
+    //store table into empty list
+    setState(() {
+        entries = table;
+    });
   }
 }

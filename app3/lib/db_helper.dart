@@ -54,13 +54,17 @@ class DBHelper {
       return ERROR;
     }
   }
-
-  Future<void> FetchDataFromTable(String sql) async {
+  //used to execute only select statement
+  Future<List<Map<String, Object?>>?> FetchDataFromTable(String sql) async {
     print(sql);
     try {
-      await _database!.execute(sql);
+      List<Map<String,Object?>> table = await _database!.rawQuery(sql);
+      return table;
     } catch (e) {
       print(e.toString());
+      return null;
     }
   }
+
+
 }
