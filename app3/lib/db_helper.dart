@@ -12,9 +12,8 @@ class DBHelper {
   static const int ERROR = -1;
   // CREATE TABLES
   //id,title,detail,amount,date,flag(1=expense,2=income)
-  static const String CREATE_TABLE_TRANSACTION = "CREATE TABLE IF NOT EXISTS " +
-      TABLE_TRANSACTION +
-      "(_id integer primary key autoincrement, title text, detail text, amount  int, date text, flag INTEGER)";
+  static const String CREATE_TABLE_TRANSACTION = "CREATE TABLE IF NOT EXISTS "
+      "$TABLE_TRANSACTION(_id integer primary key autoincrement, title text, detail text, amount  int, date text, flag INTEGER)";
 
   Future<Database> get db async {
     if (_database != null) {
@@ -27,7 +26,7 @@ class DBHelper {
   initDatabase() async {
     Directory DocumentDirectory = await getApplicationDocumentsDirectory();
     String path = DocumentDirectory.path + DATABASE_NAME;
-    print('=====Database path==== ' + path);
+    print('=====Database path==== $path');
     var db = await openDatabase(path,
         version: DATABASE_VERSION, onCreate: CREATE_TABLES_OF_PROJECT);
     return db;

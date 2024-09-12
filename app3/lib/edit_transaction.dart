@@ -1,34 +1,89 @@
+import 'package:app3/db_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
+
+import 'app_view_expense.dart';
 
 class EditExistingTransaction extends StatelessWidget {
-  const EditExistingTransaction({super.key});
 
+  String entryId ='';
+  EditExistingTransaction(String entryId)
+  {
+      this.entryId = entryId;
+  }
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: "Income/Expense app",
-      home: EditTransaction(),
+      home: EditTransaction(entryId),
     );
   }
 }
 
 class EditTransaction extends StatefulWidget {
-  const EditTransaction({super.key});
 
+  String entryId = '';
+  EditTransaction(String entryId)
+  {
+    this.entryId = entryId;
+  }
 
   @override
   State<EditTransaction> createState() {
-    _EditTransactionState e1 = _EditTransactionState();
+    _EditTransactionState e1 = _EditTransactionState(entryId);
     return e1;
   }
 }
 
 class _EditTransactionState extends State<EditTransaction> {
-  TextEditingController dateController = TextEditingController();
+  var dateController = TextEditingController();
+  //create controller for each and every textfield
+  var titleController = new TextEditingController();
+  var amountController = new TextEditingController();
+  var detailController = new TextEditingController();
+
+  String Title="",Amount="",Detail="";
   String SelectedValue = '1';
+
+  String entryId = '';
+  Database? db; //variable
+  DBHelper? mydatabase = DBHelper();
+
+  var table;
+
+  String date =''; //object
+
+  _EditTransactionState(String entryId)
+  {
+    this.entryId = entryId;
+  }
+
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchEntry();
+
+    titleController.addListener(() {
+      if(titleController.text.isNotEmpty == true)   Title = titleController.text;
+    });
+
+    amountController.addListener(() {
+      if(amountController.text.isNotEmpty == true)   Amount = amountController.text;
+    });
+
+    detailController.addListener(() {
+      if(detailController.text.isNotEmpty == true)   Detail = detailController.text;
+    });
+
+
+  }
+
+  @override
+  Widget build(BuildContext context)  {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Edit Entry"),
@@ -60,9 +115,9 @@ class _EditTransactionState extends State<EditTransaction> {
                           ),
                         ),
                         const Padding(padding: EdgeInsets.only(bottom: 10)),
-                        const TextField(
-
+                        TextField(
                           keyboardType: TextInputType.text,
+                          controller: titleController,
                           decoration: InputDecoration(
                             labelText: "Title",
                             fillColor: Color(0x75ffffff),
@@ -82,7 +137,8 @@ class _EditTransactionState extends State<EditTransaction> {
                           ),
                         ),
                         const Padding(padding: EdgeInsets.only(bottom: 10)),
-                        const TextField(
+                        TextField(
+                          controller: amountController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: "Amount",
@@ -125,6 +181,7 @@ class _EditTransactionState extends State<EditTransaction> {
                               String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
                               setState(() {
                                 dateController.text = formattedDate;
+                                date = formattedDate;
                               });
                             } else {
                               print("Date is not selected");
@@ -132,7 +189,8 @@ class _EditTransactionState extends State<EditTransaction> {
                           },
                         ),
                         const Padding(padding: EdgeInsets.only(bottom: 10)),
-                        const TextField(
+                        TextField(
+                          controller: detailController,
                           keyboardType: TextInputType.text,
                           decoration: InputDecoration(
                             labelText: "Details",
@@ -180,11 +238,22 @@ class _EditTransactionState extends State<EditTransaction> {
                         SizedBox(
                           width: parent.maxWidth,
                           child: ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                // Your action here
+                            onPressed: ()  async {
+                              String sql = "update " + DBHelper.TABLE_TRANSACTION +
+                                  " set title='$Title',detail='$Detail',"
+                                  "amount=$Amount,date='$date',flag=$SelectedValue where _id=$entryId";
+                              print(sql);
+                              int response = await mydatabase!.RunQuery(sql);
+                              if(response == DBHelper.SUCCESS)
+                              {
+                                Get.snackbar("Success", "Entry edited successfully", snackPosition: SnackPosition.BOTTOM);
+                                Get.to(ViewExpense());
 
-                              });
+                              }
+                              else
+                              {
+                                Get.snackbar("error", "Entry could not be edited", snackPosition: SnackPosition.BOTTOM);
+                              }
                             },
                             child: const Text("Save Changes"),
                           ),
@@ -199,5 +268,22 @@ class _EditTransactionState extends State<EditTransaction> {
         ),
       ),
     );
+  }
+
+  Future<void> fetchEntry() async {
+    String sql = "select * from " + DBHelper.TABLE_TRANSACTION + " where _id=" + entryId;
+    db = await mydatabase!.db;
+    table = await mydatabase!.FetchDataFromTable(sql);
+    print(table);
+    print('----------------');
+    titleController.text = table[0]['title'];
+    detailController.text = table[0]['detail'];
+    dateController.text = table[0]['date'];
+    amountController.text = table[0]['amount'].toString();
+
+    setState(() {
+        SelectedValue = table[0]['flag'].toString();
+        date = table[0]['date'];
+    });
   }
 }

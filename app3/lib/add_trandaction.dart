@@ -7,18 +7,22 @@ import 'package:get/get.dart';
 import 'dart:async';
 
 class AddNewTransaction extends StatelessWidget {
+  const AddNewTransaction({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Entry"),
+        title: const Text("Add Entry"),
       ),
-      body: AddTransaction(),
+      body: const AddTransaction(),
     );
   }
 }
 
 class AddTransaction extends StatefulWidget {
+  const AddTransaction({super.key});
+
   @override
   State<AddTransaction> createState() => _AddTransactionState();
 }
@@ -95,7 +99,7 @@ class _AddTransactionState extends State<AddTransaction> {
                         TextField(
                           controller: titlecontroller,
                           keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: "Title",
                             fillColor: Color(0x75ffffff),
                             filled: true,
@@ -117,7 +121,7 @@ class _AddTransactionState extends State<AddTransaction> {
                         TextField(
                           controller: amountcontroller,
                           keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: "Amount",
                             fillColor: Color(0x75ffffff),
                             filled: true,
@@ -166,7 +170,7 @@ class _AddTransactionState extends State<AddTransaction> {
                         TextField(
                           controller: detailcontroller,
                           keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: "Details",
                             fillColor: Color(0x75ffffff),
                             filled: true,
@@ -213,10 +217,7 @@ class _AddTransactionState extends State<AddTransaction> {
                           width: parent.maxWidth,
                           child: ElevatedButton(
                             onPressed: () async {
-                              String sql = "insert into " +
-                                  DBHelper.TABLE_TRANSACTION +
-                                  " (title,detail,amount,date,flag) " +
-                                  " values ('$title','$detail',$amount,'$date',$SelectedValue)";
+                              String sql = "insert into ${DBHelper.TABLE_TRANSACTION} (title,detail,amount,date,flag)  values ('$title','$detail',$amount,'$date',$SelectedValue)";
                               int response = await mydatabase.RunQuery(sql);
                               if (response == DBHelper.SUCCESS) {
                                 print("row inserted successfully");
@@ -225,8 +226,8 @@ class _AddTransactionState extends State<AddTransaction> {
                                 print("error in inserting row");
                                 Get.snackbar("error", "Entry could not be added", snackPosition: SnackPosition.BOTTOM);
                               }
-                              await Future.delayed(Duration(seconds: 2));
-                              Get.to(ViewExpense());
+                              await Future.delayed(const Duration(seconds: 2));
+                              Get.to(const ViewExpense());
                             },
                             child: const Text("Add Entry"),
                           ),

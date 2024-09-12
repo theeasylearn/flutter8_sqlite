@@ -1,5 +1,11 @@
+import 'package:app3/register_pin.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:pinput/pinput.dart';
+
+import 'app_view_expense.dart';
 class LoginPin extends StatefulWidget {
   const LoginPin({Key? key}) : super(key: key);
 
@@ -11,6 +17,10 @@ class _LoginPinState extends State<LoginPin> {
   late final TextEditingController pinController;
   late final FocusNode focusNode;
   String pin1 = '';
+
+  //create object FlutterSecureStorage
+  FlutterSecureStorage storage = new FlutterSecureStorage();
+
   @override
   void initState() {
     super.initState();
@@ -44,8 +54,7 @@ class _LoginPinState extends State<LoginPin> {
     );
 
     /// Optionally you can use form to validate the Pinput
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return Material(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -67,6 +76,30 @@ class _LoginPinState extends State<LoginPin> {
             onCompleted: (pin) {
               debugPrint('onCompleted: $pin');
               pin1 = pin;
+      
+              //logic to compare user given pin along with pin inside storage
+      
+              //get pin from storage
+              storage.read(key: 'otp').then((result){
+                  //result variable has pin read from storage. if not found it is null
+                  if(result==null)
+                  {
+                    Get.to(new RegisterPin());
+                  }
+                  else
+                  {
+                     if(result == pin1)
+                     {
+                       //create another secure storage variable to store login status
+                       storage.write(key:"login",value: "yes");
+                       Get.to(new ViewExpense());
+                     }
+                     else
+                     {
+                       Get.snackbar("Invalid Pin","you have entered wrong pin",snackPosition: SnackPosition.BOTTOM);
+                     }
+                  }
+              });
             },
             onChanged: (value) {
               debugPrint('onChanged: $value');
